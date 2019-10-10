@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es" xml:lang="es">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<head>
+
+    <style>
+        table,
+        th,
+        td {
+            margin: 10px 0;
+            border: solid 1px #333;
+            padding: 2px 4px;
+            font: 15px Verdana;
+        }
+        
+        th {
+            font-weight: bold;
+        }
+        
+        #loader {
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid blue;
+            border-bottom: 16px solid blue;
+            width: 60px;
+            height: 60px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            visibility: hidden;
+        }
+        
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        form {
+            width: 200px;
+            margin: 0;
+        }
+        
+        .botones {
+            width: 200px;
+        }
+        
+        #customers {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 60%;
+        }
+        
+        #customers td,
+        #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        #customers tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        #customers tr:hover {
+            background-color: #ddd;
+        }
+        
+        #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        #customers header {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: rgb(91, 76, 175);
+            color: white;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script>
+        var script_url = "https://script.google.com/macros/s/AKfycbyGnHIHlTA9IEBFX8WlsCAS2AfPyMm4rUdESmLxpP6ZnITIN24/exec";
+
+
+
+        var totaljs;
+        var lista = [];
+        var clv1 = "3384";
+
+
+        function cambio3() {
+            console.log($("#entidad").val())
+        }
+
+        function cambio() {
+
+            var pcos = [30, 15, 15, 60, 15, 15, 15, 30, 60, 35, 18, 35, 25, 18, 18, 60, 60, 50, 1, 0.2, 125];
+            var texv = "Subtotal: " + $("#cantidad").val() * pcos[$("#producto").val() - 1] + " Soles";
+            $("#precio").val(texv);
+        }
+
+        function cambio2(v) {
+
+            $("#total").val(v);
+        }
+        // Make an AJAX call to Google Script
+
+
+
+        function insert_camb() {
+
+            var org1 = $("#organizador").val();
+            org1 = org1 || "18";
+            var cod1 = $("#codigo").val();
+            cod1 = cod1 || "18";
+            var clva = $("#claveaf").val();
+            clva = clva || "2247";
+            var pago = $("#pago").val();
+            var lugar = $("#entidad").val();
+            var agente = $("#agente").val();
+            var otro = $("#nuevoa").val();
+            var idp1 = $("#idp").val();
+            if (cod1 == "") {
+                alert("No introdujo Código o clave");
+                return;
+            } else {
+                var url = script_url + "?org=" + org1 + "&entidad=" + lugar + "&pago=" + pago + "&pagc=" + pago + "&paga=" + pago + "&cod=" + cod1 + "&clv=" + clv1 + "&clva=" + clva + "&agente=" + agente + "&otro=" + otro + "&user=" + clva + "&action=camb";
+                var request = jQuery.ajax({
+                    crossDomain: true,
+                    url: url,
+                    method: "GET",
+                    dataType: "jsonp",
+                });
+                consultar();
+            }
+        }
+
+        function envoltorio(e) {
+            alert("devuelve: " + e);
+        }
+
+
+        // print the returned data
+        function ctrlq(e) {
+            $("#re").html(e.result);
+            $("#re").css("visibility", "visible");
+            read_value();
+        }
+
+        function ctrlq2(e) {
+            $("#re").html(e.result);
+            $("#re").css("visibility", "visible");
+            if (e.status == 'NO' || e.status == '') {
+                $("#re").css("color", "black");
+            } else {
+                $("#re").css("color", "red");
+            }
+        }
+
+        function read_value() {
+            var tot1 = $("#total").val();
+            var org1 = $("#organizador").val();
+            org1 = org1 || "18";
+            var cod1 = $("#codigo").val();
+            cod1 = cod1 || "18";
+            var clva = $("#claveaf").val();
+            clva = clva || "2247";
+
+            var vdni = $.trim($("#codigo").val());
+            var vidp = $.trim($("#idp").val());
+            var vuser = $("#entidad").val();
+
+            $("#re").css("visibility", "hidden");
+
+            document.getElementById("loader").style.visibility = "visible";
+            //var url = script_url+"?cod="+cod1+"&clv="+clv1+"&clva"+"&tot="+tot1+"&user="+vuser+"&action=read";
+            var url = script_url + "?cod=" + cod1 + "&clv=" + clv1 + "&clva=" + clva + "&user=" + vuser + "&action=read1";
+
+
+            $.getJSON(url, function(json) {
+                var table = document.createElement("table");
+                table.setAttribute('id', 'customers');
+                var header = table.createTHead();
+                var row = header.insertRow(0);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                cell1.innerHTML = "<b>Producto</b>";
+                cell2.innerHTML = "<b>Cant</b>";
+                var ult = json.records.length - 1;
+                var ptos = ['Colageno', 'Dicloruro', 'Bicarbon', 'Multivit', 'Aceitmg', 'Aromate', 'Carbonat', 'Macaneg', 'Celulasm', 'Moringc', 'Moringp', 'Aloevera', 'Nopaltun', 'Perfume', 'Saldema', 'Astaxana', 'Spirulin', 'ColagenoGrande', 'Catalogo', 'Triptico', 'Afiliacion'];
+                var cts = {
+                    Colageno: 0,
+                    Dicloruro: 0,
+                    Bicarbon: 0,
+                    Multivit: 0,
+                    Aceitmg: 0,
+                    Aromate: 0,
+                    Carbonat: 0,
+                    Macaneg: 0,
+                    Celulasm: 0,
+                    Moringc: 0,
+                    Moringp: 0,
+                    Aloevera: 0,
+                    Nopaltun: 0,
+                    Perfume: 0,
+                    Saldema: 0,
+                    Astaxana: 0,
+                    Spirulin: 0,
+                    ColagenoGrande: 0,
+                    Catalogo: 0,
+                    Triptico: 0,
+                    Afiliacion: 0
+                };
+                for (var i = 0; i < 21; i++) {
+                    cts[ptos[i]] = json.records[ult][ptos[i]];
+                    tr = table.insertRow(-1);
+                    var tabCell = tr.insertCell(-1);
+                    tabCell.innerHTML = ptos[i];
+                    tabCell = tr.insertCell(-1);
+                    tabCell.innerHTML = cts[ptos[i]];
+                };
+                var divContainer = document.getElementById("showData");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+                document.getElementById("loader").style.visibility = "hidden";
+                $("#re").css("visibility", "visible");
+            });
+        }
+
+        function consultar() {
+            var tot1 = $("#total").val();
+            var org1 = $("#organizador").val();
+            org1 = org1 || "18";
+            var cod1 = $("#codigo").val();
+            cod1 = cod1 || "18";
+            var clva = $("#claveaf").val();
+            clva = clva || "2247";
+            /*var app = ( function () {
+            var canvas = document.getElementById( 'canvas' ),
+                context = canvas.getContext( '2d' ),
+                public = {}; 
+                public.loadPicture = function () {
+                       var imageObj = new Image(); imageObj.src = 'LOGO.jpg'; imageObj.onload = function () {
+                                      context.drawImage( imageObj, 0, 0,200,100 );    }
+                };        
+                return public;} () );
+                app.loadPicture();*/
+
+            var vidp = $.trim($("#idp").val());
+            var vuser = $("#entidad").val();
+            $("#re").css("visibility", "hidden");
+
+            document.getElementById("loader").style.visibility = "visible";
+            var url = script_url + "?cod=" + cod1 + "&clv=" + clv1 + "&clva=" + clva + "&user=" + vuser + "&action=read1";
+
+            $.getJSON(url, function(json) {
+                var table = document.createElement("table");
+                table.setAttribute('id', 'customers');
+                var header = table.createTHead();
+                var tr = header.insertRow(0);
+                var cell1 = tr.insertCell(0);
+                var cell2 = tr.insertCell(1);
+                cell1.innerHTML = "<b>Item</b>";
+                cell2.innerHTML = "<b>Valor</b>";
+                var ult = json.records.length - 1;
+
+                var item = ['ID', 'DNI', 'NOMBRES', 'RECONSUMO', 'COMPRAS', 'AFILIACIONES', 'CPCNA', 'TCR', 'TCC', 'TCA', 'TTC', 'FECHA', 'LUGAR', 'PAGADO', 'AGENTE', 'OTRO', 'TOTAL'];
+                var cts = {
+                    ID: "",
+                    DNI: "",
+                    NOMBRES: "",
+                    RECONSUMO: 0,
+                    COMPRAS: 0,
+                    AFILIACIONES: 0,
+                    CPCNA: 0,
+                    TCR: 0,
+                    TCC: 0,
+                    TCA: 0,
+                    TTC: 0,
+                    FECHA: "",
+                    LUGAR: "",
+                    PAGADO: "",
+                    AGENTE: "",
+                    OTRO: "",
+                    TOTAL: 0
+                };
+                ctrlq2({
+                    "result": "Afiliado " + json.records[ult]["NOMBRES"],
+                    "status": json.records[ult]["PAGADO"]
+                });
+
+                for (var i = 0; i < 17; i++) {
+                    cts[item[i]] = json.records[ult][item[i]];
+                    tr = table.insertRow(-1);
+                    var tabCell = tr.insertCell(-1);
+                    tabCell.innerHTML = item[i];
+                    tabCell = tr.insertCell(-1);
+                    tabCell.innerHTML = (i < 16) ? cts[item[i]] : json.records[ult]["TTC"];
+                    //tabCell.innerHTML = cts[item[i]];
+                };
+                var divContainer = document.getElementById("showData");
+                divContainer.innerHTML = "";
+                divContainer.appendChild(table);
+                document.getElementById("loader").style.visibility = "hidden";
+                $("#re").css("visibility", "visible");
+            });
+        }
+
+        function imprimir() {
+
+
+            var printContents = document.getElementById('imp1').innerHTML;
+            var encabs = '<h1>Productos Angel Breña.</h1>';
+            var pie = '<p>PAB2019 | Tels:&nbsp;986 331 119 / 014567511</p>';
+            w = window.open();
+            w.document.write(encabs + printContents + pie);
+            w.document.close(); // necessary for IE >= 10
+            w.focus(); // necessary for IE >= 10
+            w.print();
+            w.close();
+            return true;
+        }
+    </script>
+
+
+
+
+</head>
+<!--body onload="consultar()"-->
+
+<body>
+
+    <div align="center">
+        <img height="250" src="LOGO.jpg">
+        <h1>Productos Angel Breña.</h1>
+        <span class="glyphicon glyphicon-send" aria-hidden="true" onclick="entro()" title="Buscar"></span>
+        <br>
+
+        <div class="form-group">
+
+
+            <form class="p-3 mb-2 bg-secondary text-dark">
+                <div class="" form-group "">
+                    <input class="form-control has-danger" class="text-center" type="text" value="Escriba el Código" disabled>
+                </div>
+                <div class="form-group">
+                    <!--label for="name">Nombre</label-->
+                    <input type="number" class="form-control" name="codigo" id="codigo" aria-describedby="codigoHelp" placeholder="Código del afiliado" title="Escriba el código del Afiliado" autofocus required>
+                    <!---small id="codigoHelp" class="form-text text-muted">Solo para Enviar o Ver.</small-->
+                </div>
+
+                <div class="form-group">
+                    <table id="tab1">
+                    </table>
+                    <!--textarea name="pedido" id="pedido"  rows="4" class="form-control" placeholder="Pedido" ></textarea-->
+                </div>
+
+                <div class="form-group">
+                    Beneficios
+                    <input class="form-control has-danger" type="text" value="DE" disabled/>
+                    <input class="form-control has-danger" type="text" value="SEPTIEMBRE" disabled>
+                    <input class="form-control has-danger" type="text" value="2019" disabled>
+                </div>
+
+
+                <div class="form-group">
+                    Datos del PAGO
+                    <select class="form-control has-danger" name="pago" id="pago" placeholder="Código del afiliado">
+  <option value='PENDIENTE'>PENDIENTE</option>
+  <option value='SI'selected>EFECTIVO</option>
+  <option value='TRANSFERENCIA'>TRANSFERENCIA</option>
+  <option value='OTRO' >OTRO</option>
+  </select>
+                    <select class="form-control has-danger" name="entidada" id="entidad">
+    <option value='VALLEJO' >CESAR VALLEJO</option>
+    <option value='COMAS' >COMAS</option>
+    <option value='ORBES' selected>ORBES</option>
+    </select>
+                    <select class="form-control has-danger" name="agente" id="agente">
+      <option value='Dr. ANGEL' >ANGEL BREÑA</option>
+      <option value='CAMILA' >CAMILA</option>
+      <option value='CARLOS' >CARLOS</option>
+      <option value='MARILU' selected >MARILÚ</option>       
+      </select>
+                </div>
+
+
+
+                <div class="form-group">
+                    <textarea name="nuevoa" id="nuevoa" rows="4" class="form-control" placeholder="Información adicional" title="NOMBRE, DNI y TELÉFONO"></textarea>
+                </div>
+
+                <div class="p-3 mb-2 bg-success text-white" class="botones">
+
+                    <hr>
+
+                    <button type="button" class="btn btn-success btn-sm" onclick="insert_camb()" class="botones" title="Pagar">Pagar</button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="consultar()" class="botones" title="Actualizar">Ver</button>
+
+                    <hr>
+                </div>
+            </form>
+
+            <BR>
+
+            <div class="p-3 mb-2 bg-success text-white" class="botones">
+                <BR>
+            </div>
+
+            <div id="loader"></div>
+
+            <BR>
+            <BR>
+            <HR>
+            <BR>
+
+            <img height="100" width="200" src="LOGO.jpg">
+            <div id="imp1" class="">
+                <p id="re"></p>
+                <div id="showData"></div>
+
+            </div>
+            <div align="center">
+                <p>PAB2019 | Tels:&nbsp;986 331 119 / 014567511&nbsp;&nbsp;&nbsp;<button type="button" class="btn btn-danger btn-sm" onclick="imprimir()">Imprimir</button> </p>
+            </div>
+            <script>
+                var ptor = ["Colageno", "Dicloruro", "Bicarbon", "Multivit", "Aceitmg", "Aromate", "Carbonat", "Macaneg", "Celulasm", "Moringc", "Moringp", "Aloevera", "Nopaltun", "Perfume", "Saldema", "Astaxana", "Spirulin", "ColagenoGrande", "Catalogo", "Triptico", "Afiliacion"];
+                var pcor = [30, 15, 15, 60, 15, 15, 15, 30, 60, 35, 18, 35, 25, 18, 18, 60, 60, 50, 1, 0.2, 125];
+                var subtt = [0];
+
+                function crearTabla(lista) {
+                    $('#tab1').empty();
+                    lista.forEach(function(e) {
+                        $("#tab1").append("<tr><td>" + e.cant + "</td><td>" + e.pto + " </td><td>" + e.subt + "</td></tr>");
+                    })
+                }
+
+                function reactiva(miarray) {
+
+                    var nueva = new Proxy(miarray, {
+                        set: function(target, property, value) {
+                            target[property] = value;
+                            crearTabla(target);
+                            return true;
+                        }
+                    })
+                    return nueva;
+                }
+                $(function() {
+
+                    listaReactiva = reactiva(lista);
+                    crearTabla(listaReactiva);
+
+                    $("#add").click(function() {
+                        vcr = $("#cantidad").val();
+                        $("#cantidad").val(1);
+                        vpr = $("#producto").val() - 1;
+                        v = parseFloat($("#total").val());
+                        adi = vcr * pcor[vpr];
+                        subtt.push(adi);
+                        v = v + adi;
+                        $("#precio").val("Subtotal: " + pcor[vpr] + " Soles");
+                        v = $("#total").val(v);
+                        listaReactiva.push({
+                            "cant": vcr,
+                            "pto": ptor[vpr],
+                            "subt": adi
+                        });
+
+                    });
+                    $("#rem").click(function() {
+                        v = parseFloat($("#total").val());
+                        rr = subtt.pop();
+                        v = v - parseFloat(rr);
+                        v = (v > 0) ? v : 0;
+                        listaReactiva.splice(lista.indexOf({
+                            "cant": $("#cantidad").val(),
+                            "pto": ptor[$("#producto").val() - 1],
+                            "subt": $("#precio").val().substr(9)
+                        }), 1);
+                        v = $("#total").val(v);
+                    });
+                })
+            </script>
+</body>
+
+
+<html>
